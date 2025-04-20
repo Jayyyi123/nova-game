@@ -50,18 +50,43 @@ class World {
 			}
 		}
 	}
-	void CreateSurface() {
-		noiseGenerator.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2S);
+	void ErodeSurface() {
+		noiseGenerator.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
 		noiseGenerator.SetSeed(seed/2);
-		noiseGenerator.SetFrequency(0.01f);
+		noiseGenerator.SetFrequency(0.005f);
 		for (int i = 0;i < WRLDW;i++) {
 			nvalue = noiseGenerator.GetNoise(i*1.0f,1.0f);
-			for (int l = 0;l < nvalue*80;l++) {
+			for (int l = 0;l < 120+nvalue*100;l++) {
+				tiles[i][l]=0;
+			}
+			for (int l = 0;l < GetRandomValue(140,150)+nvalue*100;l++) {
+				if (tiles[i][l]==1) {
+					tiles[i][l]=2;
+				}
+			}
+		}
+	}
+	void GrowGrass() {
+		for (int i = 0;i < WRLDW;i++) {
+			for (int l = 0;l < WRLDH;l++) {
+				if (tiles[i][l]==2) {
+					tiles[i][l]=3;
+					l = WRLDH;
+				}
+			}
+		}
+	}
+	void AddUnderWorld() {
+		noiseGenerator.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
+		noiseGenerator.SetSeed(seed/4);
+		noiseGenerator.SetFrequency(0.005f);
+		for (int i = 0;i < WRLDW;i++) {
+			nvalue = noiseGenerator.GetNoise(i*1.0f,1.0f);
+			for (int l = WRLDH-(120+nvalue*100);l < WRLDH;l++) {
 				tiles[i][l]=0;
 			}
 		}
 	}
-
 	void Draw(Rectangle viewportIndex) {
 		Vector2 strt = {viewportIndex.x,viewportIndex.y};
 		Vector2 end = {strt.x+viewportIndex.width,strt.y+viewportIndex.height};
@@ -74,7 +99,8 @@ class World {
 			for (int l = strt.y;l < end.y;l++) {
 				if (tiles[i][l]==1){DrawRectangleV({i*TLS,l*TLS},{TLS,TLS},GRAY);} else
 				if (tiles[i][l]==2){DrawRectangleV({i*TLS,l*TLS},{TLS,TLS},BROWN);} else
-				if (tiles[i][l]==3){DrawRectangleV({i*TLS,l*TLS},{TLS,TLS},GREEN);}
+				if (tiles[i][l]==3){DrawRectangleV({i*TLS,l*TLS},{TLS,TLS},GREEN);} else
+				if (tiles[i][l]==4){DrawRectangleV({i*TLS,l*TLS},{TLS,TLS},RED);}
 			}
 		}
 	}

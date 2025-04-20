@@ -23,7 +23,11 @@ int main(void)
 	World world;
 	world.GenerateStone(GetRandomValue(0,9999));
 	world.AddNoiseClumps(FastNoiseLite::NoiseType_Perlin,2,20,1);
-	world.CreateSurface();
+	world.AddNoiseClumps(FastNoiseLite::NoiseType_Value,0,10,-1);
+	world.AddNoiseClumps(FastNoiseLite::NoiseType_Value,1,20,0);
+	world.ErodeSurface();
+	world.GrowGrass();
+	world.AddUnderWorld();
 
 	SetTargetFPS(60);
 	while (!WindowShouldClose())
